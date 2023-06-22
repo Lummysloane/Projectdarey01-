@@ -33,3 +33,66 @@ exit the mysql shell with
 mysql> exit
 
 mysql exit.png 
+
+To start interactive script, run: sudo mysql_secure_installation
+
+when that is installed, run sudo mysql -p
+
+to install php run: sudo apt install php libapache2-mod-php php-mysql
+
+Once that is finished, run 'php -v' to confirm your PHP version
+
+php -v.png 
+
+sudo mkdir /var/www/projectlamp - creating a directory for projectlamp 
+
+To assign ownership of the directory - sudo vi /etc/apache2/sites-available/projectlamp.conf
+
+Copy the below to configure a new file in Apache using the command vi 
+
+<VirtualHost *:80>
+    ServerName projectlamp
+    ServerAlias www.projectlamp 
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/projectlamp
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+Use a2ensile command to enable the new virtual host - sudo a2ensite projectlamp
+
+Run sudo apache2ctl configtest - to make sure your configuration file doesnt contain syntax erors
+
+Reload apache so these changes take effect - sudo systemctl reload apache2
+
+The new website is now active but will need to be populated
+
+sudo echo 'Hello LAMP from hostname' $(curl -s http://169.254.169.254/latest/meta-data/public-hostname) 'with public IP' $(curl -s http://169.254.169.254/latest/meta-data/public-ipv4) > /var/www/projectlamp/index.html
+
+open a website URL using IP address : http://<Public-IP-Address>:80
+
+lamp.png 
+
+Enabling php on the website : need to edit the /etc/apache2/mods-enabled/dir.conf file and change the order in which the index.php
+
+use sudo vim /etc/apache2/mods-enabled/dir.conf to edit
+
+put the commanbd: <IfModule mod_dir.c>
+    #Change this:
+    #DirectoryIndex index.html index.cgi index.pl index.php index.xhtml index.htm
+    #To this:
+    DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+</IfModule>
+
+Reload apache by putting this command : sudo systemctl reload apache2
+
+Now that a custom location has been created, we'll create a php test script to confirm that apache is able to handle and process requests for php files
+
+to create a new file named index.php : vim /var/www/projectlamp/index.php
+
+add '<?php
+phpinfo();'
+
+Save and close the file, refresh the page and you will see the below
+
+php.png  
